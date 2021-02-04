@@ -6,11 +6,28 @@ import {Car} from "./Car";
 export class Driver{
 
 	constructor(
-		@named('test')private car: Car
+		@named('table1') private car: Car
 	) {
 
 	}
 	drive(){
+		console.log('--------Driver-------')
 		this.car.start();
+		console.log('---------------------')
+	}
+}
+
+@injectable()
+export class Driver2{
+
+	constructor(
+		@named('table2') private car: Car
+	) {
+
+	}
+	drive(){
+		console.log('--------Driver2-------')
+		this.car.start();
+		console.log('---------------------')
 	}
 }

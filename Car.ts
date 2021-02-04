@@ -1,6 +1,5 @@
 import {Engine} from "./Engine";
-import {inject, injectable, named, unmanaged} from "inversify";
-import {TYPES} from "./interfaces";
+import {injectable} from "inversify";
 
 @injectable()
 export class Car{
@@ -16,16 +15,4 @@ export class Car{
 	}
 }
 
-@injectable()
-export class TestCar extends Car{
-	constructor( engine: Engine, @inject('carName') @named('test')name:string) {
-		super(name, engine);
-	}
-}
 
-@injectable()
-export class ProdCar extends Car{
-	constructor(@inject('carName')name:string, engine: Engine) {
-		super(name, engine);
-	}
-}

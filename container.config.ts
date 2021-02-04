@@ -1,14 +1,28 @@
 import {Container} from 'inversify'
 import {Engine} from "./Engine";
-import {Car, ProdCar, TestCar} from "./Car";
-import {Factory, TYPES} from './interfaces';
+import {Car} from "./Car";
 
 
 const container = new Container();
 
 container.bind<Engine>(Engine).toSelf();
-container.bind<Car>(Car).to(TestCar).whenTargetNamed('test');
-container.bind<Car>(Car).to(ProdCar).whenTargetNamed('prod');
-container.bind<string>('carName').toConstantValue(process.env.TEST).whenTargetNamed('test')
-container.bind<string>('carName').toConstantValue('prod').whenTargetNamed('prod')
+//Doing it this way takes the creation of Car out of the hands of inversify
+//which means if the signature changes it has to be updated here as well
+container.bind<Car>(Car).toDynamicValue(context => {
+	const named = context.currentRequest.target.getNamedTag().value
+	let tableName;
+	switch (named) {
+		case 'table1':
+			tableName = process.env.TEST;
+			break;
+		case 'table2':
+			tableName = process.env.TESTER;
+			break;
+		default:
+			throw new Error("Unknown table name for Car");
+	}
+	const engine = context.container.get(Engine)
+	return new Car(tableName, engine)
+});
+
 export default container
