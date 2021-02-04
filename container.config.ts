@@ -6,10 +6,10 @@ import {Car} from "./Car";
 const container = new Container();
 
 container.bind<Engine>(Engine).toSelf();
-//Doing it this way takes the creation of Car out of the hands of inversify
-//which means if the signature changes it has to be updated here as well
-container.bind<Car>(Car).toDynamicValue(context => {
-	const named = context.currentRequest.target.getNamedTag().value
+container.bind<Car>(Car).toSelf()
+
+container.bind<string>('tableName').toDynamicValue(context => {
+	const named = context.currentRequest.parentRequest?.target.getNamedTag()?.value
 	let tableName;
 	switch (named) {
 		case 'table1':
@@ -19,10 +19,11 @@ container.bind<Car>(Car).toDynamicValue(context => {
 			tableName = process.env.TESTER;
 			break;
 		default:
-			throw new Error("Unknown table name for Car");
+			console.log("Unknown tableName setting to empty string");
+			tableName='';
 	}
-	const engine = context.container.get(Engine)
-	return new Car(tableName, engine)
+
+	return tableName
 });
 
 export default container
